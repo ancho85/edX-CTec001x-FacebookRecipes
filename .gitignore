@@ -54,3 +54,6 @@ tmp/**/*
 ### Proguard
 
 proguard
+
+### api information variable
+gradle.properties

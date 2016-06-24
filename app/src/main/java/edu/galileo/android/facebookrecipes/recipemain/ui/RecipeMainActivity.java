@@ -1,8 +1,11 @@
 package edu.galileo.android.facebookrecipes.recipemain.ui;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageButton;
 import android.widget.ImageView;
@@ -12,7 +15,9 @@ import android.widget.RelativeLayout;
 import butterknife.Bind;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
+import edu.galileo.android.facebookrecipes.FacebookRecipesApp;
 import edu.galileo.android.facebookrecipes.R;
+import edu.galileo.android.facebookrecipes.RecipeListActivity;
 import edu.galileo.android.facebookrecipes.entities.Recipe;
 import edu.galileo.android.facebookrecipes.libs.base.ImageLoader;
 import edu.galileo.android.facebookrecipes.recipemain.RecipeMainPresenter;
@@ -48,6 +53,32 @@ public class RecipeMainActivity extends AppCompatActivity implements RecipeMainV
     protected void onDestroy() {
         presenter.onDestroy();
         super.onDestroy();
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.menu_recipes_main, menu);
+        return super.onCreateOptionsMenu(menu);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        int id = item.getItemId();
+        if (id == R.id.action_list){
+            navigateToListScreen();
+        }else if (id == R.id.action_logout){
+            logout();
+        }
+        return super.onOptionsItemSelected(item);
+    }
+
+    private void logout() {
+        FacebookRecipesApp app = (FacebookRecipesApp) getApplication();
+        app.logout();
+    }
+
+    private void navigateToListScreen() {
+        startActivity(new Intent(this, RecipeListActivity.class));
     }
 
     private void setUpInjection() {

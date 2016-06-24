@@ -35,6 +35,8 @@
 
         <activity android:name=".recipemain.ui.RecipeMainActivity">
         </activity>
+        <activity android:name=".RecipeListActivity">
+        </activity>
     </application>
 
 </manifest>

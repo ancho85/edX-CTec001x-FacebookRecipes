@@ -19,7 +19,7 @@ import java.util.Arrays;
 import butterknife.Bind;
 import butterknife.ButterKnife;
 import edu.galileo.android.facebookrecipes.R;
-import edu.galileo.android.facebookrecipes.RecipeMainActivity;
+import edu.galileo.android.facebookrecipes.recipemain.RecipeMainActivity;
 
 public class LoginActivity extends AppCompatActivity {
 

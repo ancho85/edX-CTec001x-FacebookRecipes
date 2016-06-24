@@ -10,6 +10,7 @@ import android.widget.RelativeLayout;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
+import butterknife.OnClick;
 import edu.galileo.android.facebookrecipes.R;
 import edu.galileo.android.facebookrecipes.entities.Recipe;
 import edu.galileo.android.facebookrecipes.recipemain.RecipeMainPresenter;
@@ -28,6 +29,7 @@ public class RecipeMainActivity extends AppCompatActivity implements RecipeMainV
     RelativeLayout layoutContainer;
 
     private RecipeMainPresenter presenter;
+    private Recipe currentRecipe;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -78,6 +80,18 @@ public class RecipeMainActivity extends AppCompatActivity implements RecipeMainV
     @Override
     public void dismissAnimation() {
 
+    }
+
+    @OnClick(R.id.imgKeep)
+    public void onKeep(){
+        if (currentRecipe != null){
+            presenter.saveRecipe(currentRecipe);
+        }
+    }
+
+    @OnClick(R.id.imgDismiss)
+    public void onDismiss(){
+        presenter.dismissRecipe();
     }
 
     @Override

@@ -12,6 +12,9 @@ import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 
+import com.bumptech.glide.request.RequestListener;
+import com.bumptech.glide.request.target.Target;
+
 import butterknife.Bind;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
@@ -21,7 +24,6 @@ import edu.galileo.android.facebookrecipes.RecipeListActivity;
 import edu.galileo.android.facebookrecipes.entities.Recipe;
 import edu.galileo.android.facebookrecipes.libs.base.ImageLoader;
 import edu.galileo.android.facebookrecipes.recipemain.RecipeMainPresenter;
-import edu.galileo.android.facebookrecipes.recipemain.events.RecipeMainEvent;
 
 public class RecipeMainActivity extends AppCompatActivity implements RecipeMainView {
 
@@ -46,8 +48,27 @@ public class RecipeMainActivity extends AppCompatActivity implements RecipeMainV
         setContentView(R.layout.activity_recipe_main);
         ButterKnife.bind(this);
         setUpInjection();
+        setUpImageLoader();
         presenter.onCreate();
         presenter.getNextRecipe();
+    }
+
+    private void setUpImageLoader() {
+        RequestListener glideRequestListener = new RequestListener() {
+            @Override
+            public boolean onException(Exception e, Object model, Target target, boolean isFirstResource) {
+                presenter.imageError(e.getLocalizedMessage());
+                return false;
+            }
+
+            @Override
+            public boolean onResourceReady(Object resource, Object model, Target target, boolean isFromMemoryCache, boolean isFirstResource) {
+                presenter.imageReady();
+                return false;
+            }
+        };
+        //linea comentada ya que el imageLoader aún no existe. debe de inyectarse.
+        //imageLoader.setOnFinishedImageLoadingListener(glideRequestListener);
     }
 
     @Override
@@ -84,42 +105,6 @@ public class RecipeMainActivity extends AppCompatActivity implements RecipeMainV
 
     private void setUpInjection() {
         //el presentador debe llamar a algo, para poder probar.
-        presenter = new RecipeMainPresenter() {
-            @Override
-            public void onCreate() {
-
-            }
-
-            @Override
-            public void onDestroy() {
-
-            }
-
-            @Override
-            public void dismissRecipe() {
-
-            }
-
-            @Override
-            public void getNextRecipe() {
-
-            }
-
-            @Override
-            public void saveRecipe(Recipe recipe) {
-
-            }
-
-            @Override
-            public void onEventMainThread(RecipeMainEvent event) {
-
-            }
-
-            @Override
-            public RecipeMainView getView() {
-                return null;
-            }
-        };
     }
 
     @Override

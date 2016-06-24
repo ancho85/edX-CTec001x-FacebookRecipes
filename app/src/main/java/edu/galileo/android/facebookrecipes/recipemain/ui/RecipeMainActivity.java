@@ -1,6 +1,7 @@
 package edu.galileo.android.facebookrecipes.recipemain.ui;
 
 import android.os.Bundle;
+import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.ImageButton;
@@ -13,6 +14,7 @@ import butterknife.ButterKnife;
 import butterknife.OnClick;
 import edu.galileo.android.facebookrecipes.R;
 import edu.galileo.android.facebookrecipes.entities.Recipe;
+import edu.galileo.android.facebookrecipes.libs.base.ImageLoader;
 import edu.galileo.android.facebookrecipes.recipemain.RecipeMainPresenter;
 
 public class RecipeMainActivity extends AppCompatActivity implements RecipeMainView {
@@ -30,6 +32,7 @@ public class RecipeMainActivity extends AppCompatActivity implements RecipeMainV
 
     private RecipeMainPresenter presenter;
     private Recipe currentRecipe;
+    private ImageLoader imageLoader;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -83,29 +86,31 @@ public class RecipeMainActivity extends AppCompatActivity implements RecipeMainV
     }
 
     @OnClick(R.id.imgKeep)
-    public void onKeep(){
-        if (currentRecipe != null){
+    public void onKeep() {
+        if (currentRecipe != null) {
             presenter.saveRecipe(currentRecipe);
         }
     }
 
     @OnClick(R.id.imgDismiss)
-    public void onDismiss(){
+    public void onDismiss() {
         presenter.dismissRecipe();
     }
 
     @Override
     public void onRecipeSaved() {
-
+        Snackbar.make(layoutContainer, R.string.recipemain_notice_saved, Snackbar.LENGTH_SHORT).show();
     }
 
     @Override
     public void setRecipe(Recipe recipe) {
-
+        this.currentRecipe = recipe;
+        imageLoader.load(imgRecipe, recipe.getImageURL()); //antes de hacer esto, debería de tener un listener
     }
 
     @Override
     public void onGetRecipeError(String error) {
-
+        String msgError = String.format(getString(R.string.recipemain_error), error);
+        Snackbar.make(layoutContainer, msgError, Snackbar.LENGTH_SHORT).show();
     }
 }

@@ -4,8 +4,10 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
+import android.view.GestureDetector;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.MotionEvent;
 import android.view.View;
 import android.widget.ImageButton;
 import android.widget.ImageView;
@@ -26,7 +28,7 @@ import edu.galileo.android.facebookrecipes.libs.base.ImageLoader;
 import edu.galileo.android.facebookrecipes.recipemain.RecipeMainPresenter;
 import edu.galileo.android.facebookrecipes.recipemain.di.RecipeMainComponent;
 
-public class RecipeMainActivity extends AppCompatActivity implements RecipeMainView {
+public class RecipeMainActivity extends AppCompatActivity implements RecipeMainView, SwipeGestureListener {
 
     @Bind(R.id.imgRecipe)
     ImageView imgRecipe;
@@ -51,8 +53,19 @@ public class RecipeMainActivity extends AppCompatActivity implements RecipeMainV
         ButterKnife.bind(this);
         setUpInjection();
         setUpImageLoader();
+        setUpGestureDetection();
         presenter.onCreate();
         presenter.getNextRecipe();
+    }
+
+    private void setUpGestureDetection() {
+        final GestureDetector gestureDetector = new GestureDetector(this, new SwipeGestureDetector(this));
+        View.OnTouchListener gestureListener = new View.OnTouchListener() {
+            public boolean onTouch(View v, MotionEvent event) {
+                return gestureDetector.onTouchEvent(event);
+            }
+        };
+        imgRecipe.setOnTouchListener(gestureListener);
     }
 
     private void setUpImageLoader() {
@@ -145,6 +158,7 @@ public class RecipeMainActivity extends AppCompatActivity implements RecipeMainV
     }
 
     @OnClick(R.id.imgKeep)
+    @Override //la interfaz implementada requiere que se sobreescriba onKeep
     public void onKeep() {
         if (currentRecipe != null) {
             presenter.saveRecipe(currentRecipe);
@@ -152,6 +166,7 @@ public class RecipeMainActivity extends AppCompatActivity implements RecipeMainV
     }
 
     @OnClick(R.id.imgDismiss)
+    @Override //la interfaz implementada requiere que se sobreescriba onDismiss
     public void onDismiss() {
         presenter.dismissRecipe();
     }

@@ -65,7 +65,21 @@ public class RecipeMainPresenterImpl implements RecipeMainPresenter {
     @Override
     @Subscribe
     public void onEventMainThread(RecipeMainEvent event) {
+        if (view != null) {
+            String error = event.getError();
+            if (error != null) {
+                view.hideProgress();
+                view.onGetRecipeError(error);
+            } else {
+                if (event.getType() == RecipeMainEvent.NEXT_EVENT) {
+                    view.setRecipe(event.getRecipe());
+                } else if (event.getType() == RecipeMainEvent.SAVE_EVENT) {
+                    view.onRecipeSaved();
+                    getNextInteractor.execute();
+                }
 
+            }
+        }
     }
 
     @Override

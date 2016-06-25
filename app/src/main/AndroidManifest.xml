@@ -35,7 +35,9 @@
 
         <activity android:name=".recipemain.ui.RecipeMainActivity">
         </activity>
-        <activity android:name=".RecipeListActivity">
+        <activity
+            android:name=".recipelist.ui.RecipeListActivity"
+            android:theme="@style/AppTheme.NoActionBar">
         </activity>
     </application>
 

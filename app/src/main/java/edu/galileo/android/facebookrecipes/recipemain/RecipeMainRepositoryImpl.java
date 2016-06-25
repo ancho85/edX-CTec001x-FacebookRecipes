@@ -1,6 +1,5 @@
 package edu.galileo.android.facebookrecipes.recipemain;
 
-import org.greenrobot.eventbus.EventBus;
 
 import java.util.Random;
 
@@ -8,6 +7,7 @@ import edu.galileo.android.facebookrecipes.BuildConfig;
 import edu.galileo.android.facebookrecipes.api.RecipeSearchResponse;
 import edu.galileo.android.facebookrecipes.api.RecipeService;
 import edu.galileo.android.facebookrecipes.entities.Recipe;
+import edu.galileo.android.facebookrecipes.libs.base.EventBus;
 import edu.galileo.android.facebookrecipes.recipemain.events.RecipeMainEvent;
 import retrofit2.Call;
 import retrofit2.Callback;

@@ -9,6 +9,8 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
@@ -147,26 +149,50 @@ public class RecipeMainActivity extends AppCompatActivity implements RecipeMainV
         imgDismiss.setVisibility(View.GONE);
     }
 
+    private void clearImage(){
+        imgRecipe.setImageResource(0);
+    }
+
     @Override
     public void saveAnimation() {
-
+        Animation anim = AnimationUtils.loadAnimation(getApplicationContext(), R.anim.anim_save);
+        anim.setAnimationListener(getAnimationListener());
+        imgRecipe.startAnimation(anim);
     }
 
     @Override
     public void dismissAnimation() {
-
+        Animation anim = AnimationUtils.loadAnimation(getApplicationContext(), R.anim.anim_dismiss);
+        anim.setAnimationListener(getAnimationListener());
+        imgRecipe.startAnimation(anim);
     }
 
-    @OnClick(R.id.imgKeep)
+    private Animation.AnimationListener getAnimationListener(){
+        return new Animation.AnimationListener() {
+
+            @Override
+            public void onAnimationStart(Animation animation) { }
+
+            @Override
+            public void onAnimationRepeat(Animation animation) { }
+
+            @Override
+            public void onAnimationEnd(Animation animation) {
+                clearImage();
+            }
+        };
+    }
+
     @Override //la interfaz implementada requiere que se sobreescriba onKeep
+    @OnClick(R.id.imgKeep)
     public void onKeep() {
         if (currentRecipe != null) {
             presenter.saveRecipe(currentRecipe);
         }
     }
 
-    @OnClick(R.id.imgDismiss)
     @Override //la interfaz implementada requiere que se sobreescriba onDismiss
+    @OnClick(R.id.imgDismiss)
     public void onDismiss() {
         presenter.dismissRecipe();
     }

@@ -8,6 +8,17 @@
         android:icon="@android:drawable/ic_menu_gallery"
         android:title="@string/recipemain.menu.action.main"
         app:showAsAction="always"/> <!-- esto hace que siempre se vea como boton en pantalla -->
+
+    <item
+        android:id="@+id/action_show_all"
+        android:title="@string/global.menu.action.all"
+        app:showAsAction="never"/>
+
+    <item
+        android:id="@+id/action_show_favs"
+        android:title="@string/global.menu.action.favs"
+        app:showAsAction="never"/>
+
     <item
         android:id="@+id/action_logout"
         android:title="@string/global.menu.action.logout"

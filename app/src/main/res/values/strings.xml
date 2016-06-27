@@ -6,5 +6,7 @@
     <string name="recipemain.notice.saved">Guardado exitosamente</string>
     <string name="recipemain.menu.action.list">Recetas guardadas</string>
     <string name="global.menu.action.logout">Cerrar sesión</string>
+    <string name="global.menu.action.all">Ver todos</string>
+    <string name="global.menu.action.favs">Ver favoritos</string>
     <string name="recipemain.menu.action.main">Elegir receta</string>
 </resources>

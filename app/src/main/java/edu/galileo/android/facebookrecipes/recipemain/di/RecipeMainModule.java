@@ -42,19 +42,19 @@ public class RecipeMainModule {
 
     @Provides
     @Singleton
-    SaveRecipeInteractor provideSaveRecipeInteractor(RecipeMainRepository repository) {
+    SaveRecipeInteractor providesSaveRecipeInteractor(RecipeMainRepository repository) {
         return new SaveRecipeInteractorImpl(repository);
     }
 
     @Provides
     @Singleton
-    GetNextRecipeInteractor provideGetNextRecipeInteractor(RecipeMainRepository repository) {
+    GetNextRecipeInteractor providesGetNextRecipeInteractor(RecipeMainRepository repository) {
         return new GetNextRecipeInteractorImpl(repository);
     }
 
     @Provides
     @Singleton
-    RecipeMainRepository provideRecipeMainRepository(EventBus eventBus, RecipeService service) {
+    RecipeMainRepository providesRecipeMainRepository(EventBus eventBus, RecipeService service) {
         return new RecipeMainRepositoryImpl(eventBus, service);
     }
 
@@ -63,7 +63,7 @@ public class RecipeMainModule {
     //pero como no lo estoy usuando en otro módulo que no sea en éste, se lo coloca aquí.
     @Provides
     @Singleton
-    RecipeService provideRecipeService() {
+    RecipeService providesRecipeService() {
         return new RecipeClient().getRecipeService();
     }
 

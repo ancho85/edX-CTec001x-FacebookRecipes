@@ -6,8 +6,10 @@ import org.mockito.Mock;
 
 import java.io.IOException;
 import java.util.Arrays;
+import java.util.Random;
 
 import edu.galileo.android.facebookrecipes.BaseTest;
+import edu.galileo.android.facebookrecipes.BuildConfig;
 import edu.galileo.android.facebookrecipes.api.RecipeSearchResponse;
 import edu.galileo.android.facebookrecipes.api.RecipeService;
 import edu.galileo.android.facebookrecipes.entities.Recipe;
@@ -19,6 +21,7 @@ import retrofit2.Callback;
 import retrofit2.Response;
 
 import static junit.framework.Assert.assertEquals;
+import static junit.framework.Assert.assertNotNull;
 import static junit.framework.Assert.assertNull;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -55,6 +58,37 @@ public class RecipeMainRepositoryImplTest extends BaseTest {
         assertEquals(RecipeMainEvent.SAVE_EVENT, event.getType());  // prueba del argumento
         assertNull(event.getError());
         assertNull(event.getRecipe());
+    }
+
+    @Test
+    public void testGetNextRecipeCalled_APIServiceSuccessCall_EventPosted() throws Exception {
+        int recipePage = new Random().nextInt(RecipeMainRepository.RECIPE_RANGE);
+        when(service.search(
+                BuildConfig.FOOD_API_KEY,
+                RecipeMainRepository.RECENT_SORT,
+                RecipeMainRepository.COUNT,
+                recipePage)
+        ).thenReturn(buildCall(true, null));
+
+        repository.setRecipePage(recipePage);
+        repository.getNextRecipe();
+
+        verify(service).search(
+                BuildConfig.FOOD_API_KEY,
+                RecipeMainRepository.RECENT_SORT,
+                RecipeMainRepository.COUNT,
+                recipePage);
+        verify(eventBus).post(recipeMainEventArgumentCaptor.capture());
+        RecipeMainEvent event = recipeMainEventArgumentCaptor.getValue();
+        assertEquals(RecipeMainEvent.NEXT_EVENT, event.getType());
+        assertNull(event.getError());
+        assertNotNull(event.getRecipe());
+        assertEquals(recipe, event.getRecipe());
+    }
+
+    @Test
+    public void testGetNextRecipeCalled_APIServiceFailedCall_EventPosted() throws Exception {
+
     }
 
     //método helper

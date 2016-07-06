@@ -1,5 +1,10 @@
 package edu.galileo.android.facebookrecipes.recipemain;
 
+import android.view.View;
+import android.widget.ImageButton;
+import android.widget.ProgressBar;
+
+import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.robolectric.Robolectric;
@@ -9,10 +14,14 @@ import org.robolectric.util.ActivityController;
 
 import edu.galileo.android.facebookrecipes.BaseTest;
 import edu.galileo.android.facebookrecipes.BuildConfig;
+import edu.galileo.android.facebookrecipes.R;
 import edu.galileo.android.facebookrecipes.entities.Recipe;
 import edu.galileo.android.facebookrecipes.libs.base.ImageLoader;
 import edu.galileo.android.facebookrecipes.recipemain.ui.RecipeMainActivity;
 import edu.galileo.android.facebookrecipes.recipemain.ui.RecipeMainView;
+
+import static junit.framework.Assert.assertEquals;
+import static junit.framework.Assert.assertNotNull;
 
 /**
  * Created by carlos.gomez on 06/07/2016.
@@ -51,5 +60,43 @@ public class RecipeMainActivityTest extends BaseTest {
         controller = ActivityController.of(Robolectric.getShadowsAdapter(), recipeMainActivity).create().visible(); //create y visible son métodos de robolectric
         activity = controller.get();
         view = (RecipeMainView) activity;
+    }
+
+    @Test
+    public void testShowProgress_progressBarShouldBeVisible() throws Exception {
+        view.showProgress();
+        ProgressBar progressBar = (ProgressBar) activity.findViewById(R.id.progressBar);
+        assertNotNull(progressBar);
+        assertEquals(View.VISIBLE, progressBar.getVisibility());
+    }
+
+    @Test
+    public void testHideProgress_progressBarShouldBeGone() throws Exception {
+        view.hideProgress();
+        ProgressBar progressBar = (ProgressBar) activity.findViewById(R.id.progressBar);
+        assertNotNull(progressBar);
+        assertEquals(View.GONE, progressBar.getVisibility());
+    }
+
+    @Test
+    public void testShowUIElements_buttonsShouldBeVisible() throws Exception {
+        view.showUIElements();
+        ImageButton imgKeep = (ImageButton) activity.findViewById(R.id.imgKeep);
+        ImageButton imgDismiss = (ImageButton) activity.findViewById(R.id.imgDismiss);
+        assertNotNull(imgKeep);
+        assertNotNull(imgDismiss);
+        assertEquals(View.VISIBLE, imgKeep.getVisibility());
+        assertEquals(View.VISIBLE, imgDismiss.getVisibility());
+    }
+
+    @Test
+    public void testHideUIElements_buttonsShouldBeGone() throws Exception {
+        view.hideUIElements();
+        ImageButton imgKeep = (ImageButton) activity.findViewById(R.id.imgKeep);
+        ImageButton imgDismiss = (ImageButton) activity.findViewById(R.id.imgDismiss);
+        assertNotNull(imgKeep);
+        assertNotNull(imgDismiss);
+        assertEquals(View.GONE, imgKeep.getVisibility());
+        assertEquals(View.GONE, imgDismiss.getVisibility());
     }
 }

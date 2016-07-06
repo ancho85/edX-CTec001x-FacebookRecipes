@@ -5,6 +5,8 @@ import org.junit.runner.RunWith;
 import org.robolectric.RobolectricGradleTestRunner;
 import org.robolectric.annotation.Config;
 
+import java.util.Random;
+
 import edu.galileo.android.facebookrecipes.BaseTest;
 import edu.galileo.android.facebookrecipes.BuildConfig;
 import edu.galileo.android.facebookrecipes.entities.Recipe;
@@ -64,5 +66,24 @@ public class RecipeServiceTest extends BaseTest{
 
         Recipe recipe = recipeSearchResponse.getFirstRecipe();
         assertNull(recipe);
+    }
+
+    @Test
+    public void doSearch_getRandomRecipeFromBackend() throws Exception {
+        String sort = RecipeMainRepository.RECENT_SORT;
+        int count = RecipeMainRepository.COUNT;
+        int page = new Random().nextInt(RecipeMainRepository.RECIPE_RANGE);
+        Call<RecipeSearchResponse> call = service.search(BuildConfig.FOOD_API_KEY, sort, count, page);
+
+        Response<RecipeSearchResponse> response = call.execute(); //síncrono, en el main thread
+        assertTrue(response.isSuccess());
+
+        RecipeSearchResponse recipeSearchResponse = response.body();
+        if (recipeSearchResponse.getCount() == 1){
+            Recipe recipe = recipeSearchResponse.getFirstRecipe();
+            assertNotNull(recipe);
+        }else{
+            System.out.println("invalid recipe");
+        }
     }
 }

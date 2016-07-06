@@ -14,6 +14,7 @@ import retrofit2.Response;
 
 import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertNotNull;
+import static junit.framework.Assert.assertNull;
 import static junit.framework.Assert.assertTrue;
 
 /**
@@ -46,5 +47,22 @@ public class RecipeServiceTest extends BaseTest{
 
         Recipe recipe = recipeSearchResponse.getFirstRecipe();
         assertNotNull(recipe);
+    }
+
+    @Test
+    public void doSearch_getNoRecipeFromBackend() throws Exception {
+        String sort = RecipeMainRepository.RECENT_SORT;
+        int count = RecipeMainRepository.COUNT;
+        int page = 1000000000;
+        Call<RecipeSearchResponse> call = service.search(BuildConfig.FOOD_API_KEY, sort, count, page);
+
+        Response<RecipeSearchResponse> response = call.execute(); //síncrono, en el main thread
+        assertTrue(response.isSuccess());
+
+        RecipeSearchResponse recipeSearchResponse = response.body();
+        assertEquals(0, recipeSearchResponse.getCount());
+
+        Recipe recipe = recipeSearchResponse.getFirstRecipe();
+        assertNull(recipe);
     }
 }

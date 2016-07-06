@@ -8,6 +8,7 @@ repositories {
 android {
     compileSdkVersion rootProject.ext.compileSdkVersion
     buildToolsVersion rootProject.ext.buildToolsVersion
+    useLibrary 'org.apache.http.legacy' //robolectric requiere acceso a la librería http
 
     defaultConfig {
         applicationId "edu.galileo.android.facebookrecipes"

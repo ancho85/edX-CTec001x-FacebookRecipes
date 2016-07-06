@@ -4,11 +4,19 @@ import org.junit.Test;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 
+import java.io.IOException;
+import java.util.Arrays;
+
 import edu.galileo.android.facebookrecipes.BaseTest;
+import edu.galileo.android.facebookrecipes.api.RecipeSearchResponse;
 import edu.galileo.android.facebookrecipes.api.RecipeService;
 import edu.galileo.android.facebookrecipes.entities.Recipe;
 import edu.galileo.android.facebookrecipes.libs.base.EventBus;
 import edu.galileo.android.facebookrecipes.recipemain.events.RecipeMainEvent;
+import okhttp3.Request;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertNull;
@@ -47,5 +55,63 @@ public class RecipeMainRepositoryImplTest extends BaseTest {
         assertEquals(RecipeMainEvent.SAVE_EVENT, event.getType());  // prueba del argumento
         assertNull(event.getError());
         assertNull(event.getRecipe());
+    }
+
+    //método helper
+    private Call<RecipeSearchResponse> buildCall(final boolean success, final String errorMsg) {
+        Call<RecipeSearchResponse> response = new Call<RecipeSearchResponse>() {
+            @Override
+            public Response<RecipeSearchResponse> execute() throws IOException {
+                Response<RecipeSearchResponse> result = null;
+                if (success){
+                    RecipeSearchResponse recipeSearchResponse = new RecipeSearchResponse();
+                    recipeSearchResponse.setCount(1);
+                    recipeSearchResponse.setRecipes(Arrays.asList(recipe));
+                    result = Response.success(recipeSearchResponse);
+                }else {
+                    result = Response.error(null, null);
+                }
+                return result;
+            }
+
+            @Override
+            public void enqueue(Callback<RecipeSearchResponse> callback) {
+                if (success){
+                    try {
+                        callback.onResponse(this, execute());
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                } else {
+                    callback.onFailure(this, new Throwable(errorMsg));
+                }
+            }
+
+            @Override
+            public boolean isExecuted() {
+                return true;
+            }
+
+            @Override
+            public void cancel() {
+
+            }
+
+            @Override
+            public boolean isCanceled() {
+                return false;
+            }
+
+            @Override
+            public Call<RecipeSearchResponse> clone() {
+                return null;
+            }
+
+            @Override
+            public Request request() {
+                return null;
+            }
+        };
+        return response;
     }
 }

@@ -13,6 +13,7 @@ import org.mockito.Mock;
 import org.robolectric.Robolectric;
 import org.robolectric.RobolectricGradleTestRunner;
 import org.robolectric.annotation.Config;
+import org.robolectric.internal.ShadowExtractor;
 import org.robolectric.shadows.ShadowActivity;
 import org.robolectric.util.ActivityController;
 
@@ -25,6 +26,7 @@ import edu.galileo.android.facebookrecipes.login.ui.LoginActivity;
 import edu.galileo.android.facebookrecipes.recipelist.ui.RecipeListActivity;
 import edu.galileo.android.facebookrecipes.recipemain.ui.RecipeMainActivity;
 import edu.galileo.android.facebookrecipes.recipemain.ui.RecipeMainView;
+import edu.galileo.android.facebookrecipes.support.ShadowImageView;
 
 import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertNotNull;
@@ -37,7 +39,7 @@ import static org.robolectric.Shadows.shadowOf;
  * Created by carlos.gomez on 06/07/2016.
  */
 @RunWith(RobolectricGradleTestRunner.class)
-@Config(constants = BuildConfig.class, sdk = 21)
+@Config(constants = BuildConfig.class, sdk = 21, shadows ={ShadowImageView.class}) //robolectric ya tiene ShadowImageView, pero utilizo el de mi paquete support
 public class RecipeMainActivityTest extends BaseTest {
     @Mock
     private RecipeMainPresenter presenter;
@@ -117,6 +119,25 @@ public class RecipeMainActivityTest extends BaseTest {
         ImageButton imgDismiss = (ImageButton) activity.findViewById(R.id.imgDismiss);
         assertNotNull(imgDismiss);
         imgDismiss.performClick();
+        verify(presenter).dismissRecipe();
+    }
+
+    @Test
+    public void testOnSwipeToKeep_shouldSaveRecipe() throws Exception {
+        activity.setRecipe(currentRecipe);
+        ImageView imgRecipe = (ImageView) activity.findViewById(R.id.imgRecipe);
+        assertNotNull(imgRecipe);
+        ShadowImageView shadowImage = (ShadowImageView) ShadowExtractor.extract(imgRecipe);
+        shadowImage.performSwipe(200, 200, 500, 250, 50);
+        verify(presenter).saveRecipe(currentRecipe);
+    }
+
+    @Test
+    public void testOnSwipeToDismiss_shouldDiscardRecipe() throws Exception {
+        ImageView imgRecipe = (ImageView) activity.findViewById(R.id.imgRecipe);
+        assertNotNull(imgRecipe);
+        ShadowImageView shadowImage = (ShadowImageView) ShadowExtractor.extract(imgRecipe);
+        shadowImage.performSwipe(200, 200, -500, 250, 50);
         verify(presenter).dismissRecipe();
     }
 

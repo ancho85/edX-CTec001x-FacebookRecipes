@@ -1,5 +1,7 @@
 package edu.galileo.android.facebookrecipes.recipemain;
 
+import android.content.ComponentName;
+import android.content.Intent;
 import android.view.View;
 import android.widget.ImageButton;
 import android.widget.ImageView;
@@ -11,6 +13,7 @@ import org.mockito.Mock;
 import org.robolectric.Robolectric;
 import org.robolectric.RobolectricGradleTestRunner;
 import org.robolectric.annotation.Config;
+import org.robolectric.shadows.ShadowActivity;
 import org.robolectric.util.ActivityController;
 
 import edu.galileo.android.facebookrecipes.BaseTest;
@@ -18,6 +21,8 @@ import edu.galileo.android.facebookrecipes.BuildConfig;
 import edu.galileo.android.facebookrecipes.R;
 import edu.galileo.android.facebookrecipes.entities.Recipe;
 import edu.galileo.android.facebookrecipes.libs.base.ImageLoader;
+import edu.galileo.android.facebookrecipes.login.ui.LoginActivity;
+import edu.galileo.android.facebookrecipes.recipelist.ui.RecipeListActivity;
 import edu.galileo.android.facebookrecipes.recipemain.ui.RecipeMainActivity;
 import edu.galileo.android.facebookrecipes.recipemain.ui.RecipeMainView;
 
@@ -26,6 +31,7 @@ import static junit.framework.Assert.assertNotNull;
 import static junit.framework.Assert.assertTrue;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+import static org.robolectric.Shadows.shadowOf;
 
 /**
  * Created by carlos.gomez on 06/07/2016.
@@ -46,6 +52,7 @@ public class RecipeMainActivityTest extends BaseTest {
 
     //Parte de robolectric, maneja elementos del ciclo de vida de la actividad
     private ActivityController<RecipeMainActivity> controller;  // se especifica la clase de la actividad
+    private ShadowActivity shadowActivity; // extiende la funcionalidad de la actividad
 
     @Override
     public void setUp() throws Exception {
@@ -64,6 +71,7 @@ public class RecipeMainActivityTest extends BaseTest {
         controller = ActivityController.of(Robolectric.getShadowsAdapter(), recipeMainActivity).create().visible(); //create y visible son métodos de robolectric
         activity = controller.get();
         view = (RecipeMainView) activity;
+        shadowActivity = shadowOf(activity); //robolectric construye a partir de la actividad real
     }
 
     @Test
@@ -77,6 +85,22 @@ public class RecipeMainActivityTest extends BaseTest {
     public void testOnActivityDestroyed_destroyPresenter() throws Exception {
         controller.destroy(); //elemento del ciclo de vida de la actividad
         verify(presenter).onDestroy();
+    }
+
+    @Test
+    public void testLogoutMenuClicked_ShouldLaunchLoginActivity() throws Exception {
+        shadowActivity.clickMenuItem(R.id.action_logout);  // simulación de click de menú logout
+        Intent intentAfterLogout = shadowActivity.peekNextStartedActivity();  //obtener la actividad siguiente
+        ComponentName loginComponent = new ComponentName(activity, LoginActivity.class);  //contexto y clase al ComponentName
+        assertEquals(loginComponent, intentAfterLogout.getComponent());
+    }
+
+    @Test
+    public void testListMenuClicked_ShouldLaunchRecipeListActivity() throws Exception {
+        shadowActivity.clickMenuItem(R.id.action_list);  // simulación de click de menú lista
+        Intent intentAfterLogout = shadowActivity.peekNextStartedActivity();  //obtener la actividad siguiente
+        ComponentName loginComponent = new ComponentName(activity, RecipeListActivity.class);  //contexto y clase al ComponentName
+        assertEquals(loginComponent, intentAfterLogout.getComponent());
     }
 
     @Test

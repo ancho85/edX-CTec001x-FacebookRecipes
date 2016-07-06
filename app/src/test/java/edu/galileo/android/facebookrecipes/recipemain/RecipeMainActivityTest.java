@@ -2,6 +2,7 @@ package edu.galileo.android.facebookrecipes.recipemain;
 
 import android.view.View;
 import android.widget.ImageButton;
+import android.widget.ImageView;
 import android.widget.ProgressBar;
 
 import org.junit.Test;
@@ -22,6 +23,9 @@ import edu.galileo.android.facebookrecipes.recipemain.ui.RecipeMainView;
 
 import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertNotNull;
+import static junit.framework.Assert.assertTrue;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 /**
  * Created by carlos.gomez on 06/07/2016.
@@ -47,7 +51,7 @@ public class RecipeMainActivityTest extends BaseTest {
     public void setUp() throws Exception {
         super.setUp();
         //se instancia la actividad sobrecargando los métodos que la inyección de dependencias inserta, se envía los mocks
-        RecipeMainActivity recipeMainActivity = new RecipeMainActivity(){
+        RecipeMainActivity recipeMainActivity = new RecipeMainActivity() {
             public ImageLoader getImageLoader() {
                 return imageLoader;
             }
@@ -98,5 +102,37 @@ public class RecipeMainActivityTest extends BaseTest {
         assertNotNull(imgDismiss);
         assertEquals(View.GONE, imgKeep.getVisibility());
         assertEquals(View.GONE, imgDismiss.getVisibility());
+    }
+
+    // los snackbars en onRecipeSaved y onGetRecipeError (en la clase RecipeMainActivity)
+    // no se los puede probar, entonces no se escriben las pruebas
+
+    @Test
+    public void testSetRecipe_imageLoaderShouldBeCalled() throws Exception {
+        String url = "http://lastfm.es/user/ancho85";
+        //stub
+        when(currentRecipe.getImageURL()).thenReturn(url);
+
+        view.setRecipe(currentRecipe);
+        ImageView imgRecipe = (ImageView) activity.findViewById(R.id.imgRecipe);
+        verify(imageLoader).load(imgRecipe, currentRecipe.getImageURL());
+    }
+
+    @Test
+    public void testSaveAnimation_animationShouldBeStarted() throws Exception {
+        view.saveAnimation();
+        ImageView imgRecipe = (ImageView) activity.findViewById(R.id.imgRecipe);
+        assertNotNull(imgRecipe);
+        assertNotNull(imgRecipe.getAnimation());
+        assertTrue(imgRecipe.getAnimation().hasStarted());
+    }
+
+    @Test
+    public void testDismissAnimation_animationShouldBeStarted() throws Exception {
+        view.dismissAnimation();
+        ImageView imgRecipe = (ImageView) activity.findViewById(R.id.imgRecipe);
+        assertNotNull(imgRecipe);
+        assertNotNull(imgRecipe.getAnimation());
+        assertTrue(imgRecipe.getAnimation().hasStarted());
     }
 }

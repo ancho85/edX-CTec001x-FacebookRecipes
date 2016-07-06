@@ -104,6 +104,23 @@ public class RecipeMainActivityTest extends BaseTest {
     }
 
     @Test
+    public void testKeepButtonClicked_shouldSaveRecipe() throws Exception {
+        activity.setRecipe(currentRecipe);
+        ImageButton imgKeep = (ImageButton) activity.findViewById(R.id.imgKeep);
+        assertNotNull(imgKeep);
+        imgKeep.performClick();
+        verify(presenter).saveRecipe(currentRecipe);
+    }
+
+    @Test
+    public void testDismissButtonClicked_shouldDismissRecipe() throws Exception {
+        ImageButton imgDismiss = (ImageButton) activity.findViewById(R.id.imgDismiss);
+        assertNotNull(imgDismiss);
+        imgDismiss.performClick();
+        verify(presenter).dismissRecipe();
+    }
+
+    @Test
     public void testShowProgress_progressBarShouldBeVisible() throws Exception {
         view.showProgress();
         ProgressBar progressBar = (ProgressBar) activity.findViewById(R.id.progressBar);

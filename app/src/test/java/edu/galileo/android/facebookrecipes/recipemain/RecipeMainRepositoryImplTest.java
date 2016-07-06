@@ -88,7 +88,29 @@ public class RecipeMainRepositoryImplTest extends BaseTest {
 
     @Test
     public void testGetNextRecipeCalled_APIServiceFailedCall_EventPosted() throws Exception {
+        String errorMsg = "error";
+        int recipePage = new Random().nextInt(RecipeMainRepository.RECIPE_RANGE);
+        when(service.search(
+                BuildConfig.FOOD_API_KEY,
+                RecipeMainRepository.RECENT_SORT,
+                RecipeMainRepository.COUNT,
+                recipePage)
+        ).thenReturn(buildCall(false, errorMsg));
 
+        repository.setRecipePage(recipePage);
+        repository.getNextRecipe();
+
+        verify(service).search(
+                BuildConfig.FOOD_API_KEY,
+                RecipeMainRepository.RECENT_SORT,
+                RecipeMainRepository.COUNT,
+                recipePage);
+        verify(eventBus).post(recipeMainEventArgumentCaptor.capture());
+        RecipeMainEvent event = recipeMainEventArgumentCaptor.getValue();
+        assertEquals(RecipeMainEvent.NEXT_EVENT, event.getType());
+        assertNotNull(event.getError());
+        assertNull(event.getRecipe());
+        assertEquals(errorMsg, event.getError());
     }
 
     //método helper

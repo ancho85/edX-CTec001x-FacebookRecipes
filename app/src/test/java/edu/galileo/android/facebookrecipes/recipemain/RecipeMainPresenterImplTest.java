@@ -7,6 +7,7 @@ import edu.galileo.android.facebookrecipes.BaseTest;
 import edu.galileo.android.facebookrecipes.libs.base.EventBus;
 import edu.galileo.android.facebookrecipes.recipemain.ui.RecipeMainView;
 
+import static junit.framework.Assert.assertNull;
 import static org.mockito.Mockito.verify;
 
 /**
@@ -37,4 +38,12 @@ public class RecipeMainPresenterImplTest extends BaseTest {
         presenter.onCreate();
         verify(eventBus).register(presenter); // verifique que register fue invocado con ese parámetro
     }
+
+    @Test
+    public void testOnDestroy_unsubscribedToEventBus() throws Exception {
+        presenter.onDestroy();
+        verify(eventBus).unregister(presenter); // verifique que unregister fue invocado con ese parámetro
+        assertNull(presenter.getView()); // se verifica que la vista también sea nula
+    }
+    
 }

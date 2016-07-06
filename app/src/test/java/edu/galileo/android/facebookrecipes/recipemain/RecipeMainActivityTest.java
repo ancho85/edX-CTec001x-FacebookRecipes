@@ -67,6 +67,19 @@ public class RecipeMainActivityTest extends BaseTest {
     }
 
     @Test
+    public void testOnActivityCreated_getNextRecipe() throws Exception {
+        //la actividad ya está creada en el setUp con el controller
+        verify(presenter).onCreate();
+        verify(presenter).getNextRecipe();
+    }
+
+    @Test
+    public void testOnActivityDestroyed_destroyPresenter() throws Exception {
+        controller.destroy(); //elemento del ciclo de vida de la actividad
+        verify(presenter).onDestroy();
+    }
+
+    @Test
     public void testShowProgress_progressBarShouldBeVisible() throws Exception {
         view.showProgress();
         ProgressBar progressBar = (ProgressBar) activity.findViewById(R.id.progressBar);

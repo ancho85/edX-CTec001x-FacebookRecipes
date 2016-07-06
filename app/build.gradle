@@ -34,7 +34,11 @@ android {
 
 dependencies {
     compile fileTree(dir: 'libs', include: ['*.jar'])
-    testCompile 'junit:junit:4.12'
+    //librerías para testing
+    testCompile "junit:junit:$rootProject.ext.junitVersion"  // unit testing
+    testCompile "org.robolectric:robolectric:$rootProject.ext.robolectricVersion" // pruebas que necesitan algo de android (esta lib no requiere un dispositivo)
+    testCompile "org.mockito:mockito-all:$rootProject.ext.mockitoVersion" // mocks
+
     compile "com.android.support:recyclerview-v7:$rootProject.ext.supportLibraryVersion"
     compile "com.android.support:appcompat-v7:$rootProject.ext.supportLibraryVersion"
     compile "com.android.support:design:$rootProject.ext.supportLibraryVersion"

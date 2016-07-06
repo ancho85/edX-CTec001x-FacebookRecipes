@@ -43,4 +43,9 @@ ext {
     glideVersion = '3.6.1'
     //dagger requiere esto para las anotaciones. esto viene en java7 pero android funciona en java6
     jsr250Version = '1.0'
+
+    //versiones para librerias de tests
+    robolectricVersion = '3.0'
+    mockitoVersion = '1.10.19'
+    junitVersion = '4.12'
 }

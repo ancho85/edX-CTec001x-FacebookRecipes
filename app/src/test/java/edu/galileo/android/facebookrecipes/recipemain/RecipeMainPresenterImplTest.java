@@ -6,11 +6,14 @@ import org.mockito.Mock;
 import edu.galileo.android.facebookrecipes.BaseTest;
 import edu.galileo.android.facebookrecipes.entities.Recipe;
 import edu.galileo.android.facebookrecipes.libs.base.EventBus;
+import edu.galileo.android.facebookrecipes.recipemain.events.RecipeMainEvent;
 import edu.galileo.android.facebookrecipes.recipemain.ui.RecipeMainView;
 
+import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertNotNull;
 import static junit.framework.Assert.assertNull;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 /**
  * Created by carlos.gomez on 06/07/2016.
@@ -27,7 +30,9 @@ public class RecipeMainPresenterImplTest extends BaseTest {
     @Mock
     private GetNextRecipeInteractor getNextInteractor;
     @Mock
-    Recipe recipe = new Recipe();
+    Recipe recipe;
+    @Mock
+    RecipeMainEvent event;
 
     private RecipeMainPresenterImpl presenter; // este sera objecto de pruebas
 
@@ -74,5 +79,54 @@ public class RecipeMainPresenterImplTest extends BaseTest {
         verify(view).hideUIElements();
         verify(view).showProgress();
         verify(getNextInteractor).execute();
+    }
+
+    @Test
+    public void testOnEvent_hasError() throws Exception {
+        String errorMsg = "error";
+        when(event.getError()).thenReturn(errorMsg); // modificar comportamiento del mock
+        presenter.onEventMainThread(event);
+        assertNotNull(presenter.getView());
+        verify(view).hideProgress();
+        verify(view).onGetRecipeError(event.getError());
+    }
+
+    @Test
+    public void testOnNextEvent_setRecipeOnView() throws Exception {
+        when(event.getType()).thenReturn(RecipeMainEvent.NEXT_EVENT);
+        when(event.getRecipe()).thenReturn(recipe);
+        presenter.onEventMainThread(event);
+        assertNotNull(presenter.getView());
+        verify(view).setRecipe(event.getRecipe());
+    }
+
+    @Test
+    public void testOnSaveEvent_notifyViewAndCallGetNextRecipe() throws Exception {
+        when(event.getType()).thenReturn(RecipeMainEvent.SAVE_EVENT);
+        presenter.onEventMainThread(event);
+        assertNotNull(presenter.getView());
+        verify(view).onRecipeSaved();
+        verify(getNextInteractor).execute();
+    }
+
+    @Test
+    public void testImageReady_updateUI() throws Exception {
+        presenter.imageReady();
+        assertNotNull(presenter.getView());
+        verify(view).hideProgress();
+        verify(view).showUIElements();
+    }
+
+    @Test
+    public void testImageError_updateUI() throws Exception {
+        String error = "error";
+        presenter.imageError(error);
+        assertNotNull(presenter.getView());
+        verify(view).onGetRecipeError(error);
+    }
+
+    @Test
+    public void testGetView_returnsView() throws Exception {
+        assertEquals(view, presenter.getView());
     }
 }

@@ -13,8 +13,8 @@ import edu.galileo.android.facebookrecipes.recipemain.ui.RecipeMainView;
 public class RecipeMainPresenterImpl implements RecipeMainPresenter {
     private EventBus eventBus;
     private RecipeMainView view;
-    SaveRecipeInteractor saveInteractor;
-    GetNextRecipeInteractor getNextInteractor;
+    private SaveRecipeInteractor saveInteractor;
+    private GetNextRecipeInteractor getNextInteractor;
 
     public RecipeMainPresenterImpl(EventBus eventBus, RecipeMainView view, SaveRecipeInteractor saveInteractor, GetNextRecipeInteractor getNextInteractor) {
         this.eventBus = eventBus;

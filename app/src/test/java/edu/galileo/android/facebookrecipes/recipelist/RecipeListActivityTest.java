@@ -3,6 +3,8 @@ package edu.galileo.android.facebookrecipes.recipelist;
 import android.content.ComponentName;
 import android.content.Intent;
 import android.support.annotation.StyleRes;
+import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.Toolbar;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -10,6 +12,7 @@ import org.mockito.Mock;
 import org.robolectric.Robolectric;
 import org.robolectric.RobolectricGradleTestRunner;
 import org.robolectric.annotation.Config;
+import org.robolectric.internal.ShadowExtractor;
 import org.robolectric.shadows.ShadowActivity;
 import org.robolectric.util.ActivityController;
 
@@ -26,8 +29,11 @@ import edu.galileo.android.facebookrecipes.recipelist.ui.RecipeListView;
 import edu.galileo.android.facebookrecipes.recipelist.ui.adapters.OnItemClickListener;
 import edu.galileo.android.facebookrecipes.recipelist.ui.adapters.RecipesAdapter;
 import edu.galileo.android.facebookrecipes.recipemain.ui.RecipeMainActivity;
+import edu.galileo.android.facebookrecipes.support.ShadowRecyclerView;
+import edu.galileo.android.facebookrecipes.support.ShadowRecyclerViewAdapter;
 
 import static junit.framework.Assert.assertEquals;
+import static junit.framework.Assert.assertNotNull;
 import static org.mockito.Mockito.verify;
 import static org.robolectric.Shadows.shadowOf;
 
@@ -35,7 +41,7 @@ import static org.robolectric.Shadows.shadowOf;
  * Created by carlos.gomez on 07/07/2016.
  */
 @RunWith(RobolectricGradleTestRunner.class)
-@Config(constants = BuildConfig.class, sdk = 21)
+@Config(constants = BuildConfig.class, sdk = 21, shadows = {ShadowRecyclerView.class, ShadowRecyclerViewAdapter.class})
 public class RecipeListActivityTest extends BaseTest {
     @Mock
     private Recipe recipe;
@@ -117,5 +123,32 @@ public class RecipeListActivityTest extends BaseTest {
         Intent intentAfterLogout = shadowActivity.peekNextStartedActivity();  //obtener la actividad siguiente
         ComponentName loginComponent = new ComponentName(activity, RecipeMainActivity.class);  //contexto y clase al ComponentName
         assertEquals(loginComponent, intentAfterLogout.getComponent());
+    }
+
+    @Test
+    public void testOnRecyclerViewScroll_ShouldChangeScrollPosition() throws Exception {
+        int scrollPosition = 1;
+        RecyclerView recyclerView = (RecyclerView) activity.findViewById(R.id.recyclerView);
+        assertNotNull(recyclerView);
+        ShadowRecyclerView shadowRecyclerView = (ShadowRecyclerView) ShadowExtractor.extract(recyclerView);
+
+        recyclerView.smoothScrollToPosition(scrollPosition);
+        assertEquals(scrollPosition, shadowRecyclerView.getSmoothScrollPosition());
+    }
+
+    @Test
+    public void testOnToolbarClicked_RecyclerViewShouldScrollToTop() throws Exception {
+        int scrollPosition = 1;
+        int topScrollPosition = 0;
+        Toolbar toolbar = (Toolbar) activity.findViewById(R.id.toolbar);
+        assertNotNull(toolbar);
+        RecyclerView recyclerView = (RecyclerView) activity.findViewById(R.id.recyclerView);
+        assertNotNull(recyclerView);
+        ShadowRecyclerView shadowRecyclerView = (ShadowRecyclerView) ShadowExtractor.extract(recyclerView);
+        recyclerView.smoothScrollToPosition(scrollPosition);
+
+        toolbar.performClick();
+
+        assertEquals(topScrollPosition, shadowRecyclerView.getSmoothScrollPosition());
     }
 }

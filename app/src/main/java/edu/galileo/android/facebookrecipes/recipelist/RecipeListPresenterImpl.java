@@ -45,7 +45,7 @@ public class RecipeListPresenterImpl implements RecipeListPresenter {
     public void toggleFavorite(Recipe recipe) {
         boolean fav = recipe.getFavorite();
         recipe.setFavorite(!fav);
-        storedInteractor.executeDelete(recipe);
+        storedInteractor.executeUpdate(recipe);
     }
 
     @Override

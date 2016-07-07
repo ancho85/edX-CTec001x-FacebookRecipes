@@ -35,6 +35,7 @@ import edu.galileo.android.facebookrecipes.support.ShadowRecyclerViewAdapter;
 import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertNotNull;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 import static org.robolectric.Shadows.shadowOf;
 
 /**
@@ -57,6 +58,7 @@ public class RecipeListActivityTest extends BaseTest {
     private RecipeListView view;
     private RecipeListActivity activity;
     private OnItemClickListener onItemClickListener;
+    private ShadowRecyclerViewAdapter shadowAdapter;
     private ShadowActivity shadowActivity;
     private ActivityController<RecipeListActivity> controller;
 
@@ -150,5 +152,33 @@ public class RecipeListActivityTest extends BaseTest {
         toolbar.performClick();
 
         assertEquals(topScrollPosition, shadowRecyclerView.getSmoothScrollPosition());
+    }
+
+    @Test
+    public void testRecyclerViewItemClicked_shouldStartViewActivity() throws Exception {
+        int positionToClick = 0;
+        setUpShadowAdapter(positionToClick);
+
+        shadowAdapter.itemVisible(positionToClick);
+        shadowAdapter.performItemClick(positionToClick);
+
+        Intent intent = shadowActivity.peekNextStartedActivity();
+        assertEquals(Intent.ACTION_VIEW, intent.getAction());
+        assertEquals(recipeList.get(positionToClick).getSourceURL(), intent.getDataString());
+    }
+
+    private void setUpShadowAdapter(int positionToClick) {
+        //crea un adaptador populado por un mock de recipe
+        when(recipe.getSourceURL()).thenReturn("http://lastfm.es/user/ancho85");
+        when(recipeList.get(positionToClick)).thenReturn(recipe);
+
+        RecyclerView recyclerView = (RecyclerView) activity.findViewById(R.id.recyclerView);
+        assertNotNull(recyclerView);
+
+        //ya existe un adaptador definido como un mock y setRecipes no hace nada
+        // se necesitan datos en el adaptador, entonces se instancia uno nuevo
+        RecipesAdapter adapterPopulated = new RecipesAdapter(recipeList, imageLoader, onItemClickListener);
+        recyclerView.setAdapter(adapterPopulated); // se asocia a una vista
+        shadowAdapter = (ShadowRecyclerViewAdapter) ShadowExtractor.extract(recyclerView.getAdapter());
     }
 }

@@ -4,7 +4,12 @@ import android.app.Activity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
+import android.widget.ImageButton;
 import android.widget.TextView;
+
+import com.facebook.share.model.ShareContent;
+import com.facebook.share.widget.SendButton;
+import com.facebook.share.widget.ShareButton;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -24,6 +29,7 @@ import edu.galileo.android.facebookrecipes.libs.base.ImageLoader;
 import edu.galileo.android.facebookrecipes.support.ShadowRecyclerViewAdapter;
 
 import static junit.framework.Assert.assertEquals;
+import static junit.framework.Assert.assertNotNull;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -44,11 +50,12 @@ public class RecipesAdapterTest extends BaseTest {
 
     private RecipesAdapter adapter; //sujeto de pruebas
     private ShadowRecyclerViewAdapter shadowAdapter; // pruebas de clicks (render correcto)
+    private String URL = "http://lastfm.es/user/ancho85";
 
     @Override
     public void setUp() throws Exception {
         super.setUp();
-        when(recipe.getSourceURL()).thenReturn("http://lastfm.es/user/ancho85"); // al probar el click del facebook, el recibo debe tener un URL válido
+        when(recipe.getSourceURL()).thenReturn(URL); // al probar el click del facebook, el recibo debe tener un URL válido
 
         adapter = new RecipesAdapter(recipeList, imageLoader, onItemClickListener); // adaptador real
         shadowAdapter = (ShadowRecyclerViewAdapter) ShadowExtractor.extract(adapter); // adaptador shadow, ejecutar click, contenido de viewHolders, etc.
@@ -99,5 +106,63 @@ public class RecipesAdapterTest extends BaseTest {
         TextView txtRecipeName = (TextView) view.findViewById(R.id.txtRecipeName);
 
         assertEquals(recipeTitle, txtRecipeName.getText().toString());
+    }
+
+    @Test
+    public void testOnSubItemClick_favoriteShouldCallListener() throws Exception {
+        int positionToClick = 0;
+        boolean favorite = true;
+        when(recipe.getFavorite()).thenReturn(favorite);
+        when(recipeList.get(positionToClick)).thenReturn(recipe);
+
+        shadowAdapter.itemVisible(positionToClick);
+        shadowAdapter.performItemClickOverViewInHolder(positionToClick, R.id.imgFav);
+
+        View view = shadowAdapter.getViewForHolderPosition(positionToClick);
+        ImageButton imgFav = (ImageButton) view.findViewById(R.id.imgFav);
+
+        assertEquals(favorite, imgFav.getTag());
+        verify(onItemClickListener).onFavClick(recipe);
+    }
+
+    @Test
+    public void testOnSubItemClick_deleteShouldCallListener() throws Exception {
+        int positionToClick = 0;
+        when(recipeList.get(positionToClick)).thenReturn(recipe);
+
+        shadowAdapter.itemVisible(positionToClick);
+        shadowAdapter.performItemClickOverViewInHolder(positionToClick, R.id.imgDelete);
+
+        verify(onItemClickListener).onDeleteClick(recipe);
+    }
+
+    @Test
+    public void testFacebookShareBind_shareContentSet() throws Exception {
+        int positionToShow = 0;
+        when(recipeList.get(positionToShow)).thenReturn(recipe);
+
+        shadowAdapter.itemVisible(positionToShow);
+        View view = shadowAdapter.getViewForHolderPosition(positionToShow);
+        ShareButton fbShare = (ShareButton) view.findViewById(R.id.fbShare);
+
+        ShareContent shareContent = fbShare.getShareContent();
+        assertNotNull(shareContent);
+        assertNotNull(shareContent.getContentUrl());
+        assertEquals(URL, shareContent.getContentUrl().toString());
+    }
+
+    @Test
+    public void testFacebookSendBind_shareContentSet() throws Exception {
+        int positionToShow = 0;
+        when(recipeList.get(positionToShow)).thenReturn(recipe);
+
+        shadowAdapter.itemVisible(positionToShow);
+        View view = shadowAdapter.getViewForHolderPosition(positionToShow);
+        SendButton fbSend = (SendButton) view.findViewById(R.id.fbSend);
+
+        ShareContent shareContent = fbSend.getShareContent();
+        assertNotNull(shareContent);
+        assertNotNull(shareContent.getContentUrl());
+        assertEquals(URL, shareContent.getContentUrl().toString());
     }
 }

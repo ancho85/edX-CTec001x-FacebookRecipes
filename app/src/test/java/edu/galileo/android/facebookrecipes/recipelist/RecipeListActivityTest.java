@@ -104,7 +104,7 @@ public class RecipeListActivityTest extends BaseTest {
 
     @Test
     public void testRecipeUpdated_shouldUpdateAdapter() throws Exception {
-        view.setRecipes(recipeList);
+        view.recipeUpdated();
         verify(adapter).notifyDataSetChanged();
     }
 

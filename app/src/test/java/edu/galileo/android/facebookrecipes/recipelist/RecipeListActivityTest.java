@@ -167,6 +167,28 @@ public class RecipeListActivityTest extends BaseTest {
         assertEquals(recipeList.get(positionToClick).getSourceURL(), intent.getDataString());
     }
 
+    @Test
+    public void testRecyclerViewFavoriteClicked_shouldCallPresenter() throws Exception {
+        int positionToClick = 0;
+        setUpShadowAdapter(positionToClick);
+
+        shadowAdapter.itemVisible(positionToClick);
+        shadowAdapter.performItemClickOverViewInHolder(positionToClick, R.id.imgFav);
+
+        verify(presenter).toggleFavorite(recipe);
+    }
+
+    @Test
+    public void testRecyclerViewRemoveClicked_shouldCallPresenter() throws Exception {
+        int positionToClick = 0;
+        setUpShadowAdapter(positionToClick);
+
+        shadowAdapter.itemVisible(positionToClick);
+        shadowAdapter.performItemClickOverViewInHolder(positionToClick, R.id.imgDelete);
+
+        verify(presenter).removeRecipe(recipe);
+    }
+
     private void setUpShadowAdapter(int positionToClick) {
         //crea un adaptador populado por un mock de recipe
         when(recipe.getSourceURL()).thenReturn("http://lastfm.es/user/ancho85");

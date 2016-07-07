@@ -3,7 +3,10 @@ package edu.galileo.android.facebookrecipes.recipelist.ui.adapters;
 import android.app.Activity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.view.View;
+import android.widget.TextView;
 
+import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.robolectric.Robolectric;
@@ -15,10 +18,13 @@ import java.util.List;
 
 import edu.galileo.android.facebookrecipes.BaseTest;
 import edu.galileo.android.facebookrecipes.BuildConfig;
+import edu.galileo.android.facebookrecipes.R;
 import edu.galileo.android.facebookrecipes.entities.Recipe;
 import edu.galileo.android.facebookrecipes.libs.base.ImageLoader;
 import edu.galileo.android.facebookrecipes.support.ShadowRecyclerViewAdapter;
 
+import static junit.framework.Assert.assertEquals;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 /**
@@ -52,6 +58,46 @@ public class RecipesAdapterTest extends BaseTest {
         recyclerView.setLayoutManager(new LinearLayoutManager(activity));
 
         recyclerView.setAdapter(adapter);
+    }
 
+    @Test
+    public void testSetRecipes_itemCountMatches() throws Exception {
+        int itemCount = 5;
+        when(recipeList.size()).thenReturn(itemCount);
+        adapter.setRecipes(recipeList);
+        assertEquals(itemCount, adapter.getItemCount());
+    }
+
+    @Test
+    public void testRemoveRecipe_isRemovedFromAdapter() throws Exception {
+        adapter.removeRecipe(recipe);
+        verify(recipeList).remove(recipe);
+    }
+
+    @Test
+    public void testOnItemClick_shouldCallListener() throws Exception {
+        // PRUEBA UTILIZANDO EL SHADOW ADAPTER CREADO
+        int positionToClick = 0;
+        when(recipeList.get(positionToClick)).thenReturn(recipe);
+
+        shadowAdapter.itemVisible(positionToClick); // que sea visible, se agrega el viewholder
+        shadowAdapter.performItemClick(positionToClick);  // que se realize el click
+
+        verify(onItemClickListener).onItemClick(recipe);  // verificar que el click se realizó y que se envia recipe como parámetro
+    }
+
+    @Test
+    public void testViewHolder_shouldRenderTitle() throws Exception {
+        int positionToShow = 0;
+        String recipeTitle = "title";
+        when(recipe.getTitle()).thenReturn(recipeTitle);
+        when(recipeList.get(positionToShow)).thenReturn(recipe);
+
+        shadowAdapter.itemVisible(positionToShow);
+
+        View view = shadowAdapter.getViewForHolderPosition(positionToShow);
+        TextView txtRecipeName = (TextView) view.findViewById(R.id.txtRecipeName);
+
+        assertEquals(recipeTitle, txtRecipeName.getText().toString());
     }
 }
